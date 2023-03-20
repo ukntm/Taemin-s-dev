@@ -1,0 +1,126 @@
+// 1주차 where 절 
+
+// show tables 로 어떤 테이블이 있는지 확인후
+// select*from 으로 원하는 테이블을 확인후 필드명이랑 값을 확인후 where 절로 불러온다.
+
+// 같지않음 조건
+SELECT *FROM orders
+where course_title !='웹개발 종합반' 
+
+// 범위 조건
+SELECT *FROM orders
+where created_at between '2020-07-13' and '2020-07-15'
+//between 으로 일정 범위내에 있는 값을 구할 수 있음
+
+// 포함 조건 (in)
+SELECT *FROM checkins
+where week in (1,3)
+// in 으로 ()안의 값을 포함하는 데이터를 불러
+
+// 문자열 규칙 조건 (a%t)
+SELECT *FROM users
+where email like '%daum.net'
+// like 'a%t' 라하면 a로 시작해서 t로 끝나는 문자열을 포함한 것들을 불러옴
+
+// 일부 데이터만 가져오기(limit)
+select * from orders 
+where payment_method = "kakaopay"
+limit 5
+
+// 중복 제거하고 보기(distinct)
+select distinct(payment_method) from orders
+
+// 중복을 제거한 개수
+SELECT count(distinct(name)) from users
+
+// Quiz
+
+// 포인트가 2만점보다 높은 유저
+SELECT *FROM point_users
+where point > 20000
+
+// 성이 황씨인 유저
+SELECT *FROM users
+where name = '황**'
+
+// 웹개발 종합반이면서 결제수단이 카드인 주문건
+SELECT *FROM orders
+where course_title ='웹개발 종합반' and payment_method ='CARD'
+
+// 결제수단이 CARD가 아닌 데이터
+SELECT *FROM orders
+where payment_method != 'CARD'
+
+// 20000~30000 포인트를 보유한 유저 추출
+SELECT *FROM point_users
+where point between 20000 and 30000
+
+// 이메일이 s로시작해서 com 으로 끝나는 유저 추출
+SELECT *FROM users
+where email like 's%com'
+
+// 이메일이 s로시작해서 com 으로 끝나면서 성이 이씨인 유저 추출
+SELECT *FROM users
+where email like 's%com' and name = '이**'
+
+//성이 남씨인 유저의 이메일만 추출
+SELECT email from users
+where name = ('남**')
+
+// Gmail 을 사용하는 2020/7/12~14일에 가입한 유저
+SELECT *from users
+where created_at between '2020-07-12' and '2020-07-14'
+and email like '%gmail.com'
+
+// Gmail 을 사용하는 2020/7/12~14일에 가입한 유저수
+SELECT count(*)from users
+where created_at between '2020-07-12' and '2020-07-14'
+and email like '%gmail.com'
+
+// 숙제 naver 메일을 사용하면서 웹개발 종합반 강의를듣고 결제수단을 kakaopay로 한 주문 추출
+SELECT *from orders
+where email like '%naver.com'
+and course_title ='웹개발 종합반'
+and payment_method = 'kakaopay'
+
+// 2주차 group by
+
+// 성씨별 회원수 오름차순
+select name, count(*) from users
+group by name
+order by count(*)
+
+**쿼리가 실행되는 순서: from → group by → select → order by
+
+// 웹개발 종합반의 결제수단별 주문건수 세어보기
+SELECT payment_method , count(*)from orders
+WHERE course_title ='웹개발 종합반'
+group by payment_method 
+order BY count(*)
+
+**쿼리가 실행되는 순서: from → where → group by → count(*) → order by
+// order 
+
+// 퀴즈 
+// 앱개발 종합반의 결제수단별 주문건수 세어보기
+SELECT payment_method , count(*)from orders
+WHERE course_title ='앱개발 종합반'
+group by payment_method 
+
+// Gmail 을 사용하는 성씨별 회원수 세어보기
+SELECT name, count(*)from users
+WHERE email like '%gmail.com'
+group by name 
+
+// course_id별 '오늘의 다짐'에 달린 평균 like 개수 구해보기(소수점 첫째 자리까지)
+SELECT course_id , round(avg(likes),1) from checkins
+group by course_id 
+
+// 별칭 기능
+SELECT * from orders o 
+WHERE o.course_title ='앱개발 종합반'
+
+// 숙제 네이버 이메일을 사용하여 앱개발 종합반을 신청한 주문의 결제수단별 주문건수 세어보기
+SELECT payment_method, count(*) from orders
+WHERE course_title ='앱개발 종합반' and email like '%naver.com'
+group by payment_method 
