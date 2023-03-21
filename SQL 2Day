@@ -1,0 +1,64 @@
+// join
+
+// inner join 은 교집합 , left join 은 왼쪽에 갖다붙힌다라고 생각하면됨
+// orders 테이블에 users 테이블 연
+SELECT *from orders o
+inner join users u on o.user_id = u.user_id 
+
+// 과목별 오늘의 다짐 갯수
+SELECT c1.course_id, c2.title, count(*) as cnt from checkins c1
+inner join courses c2 on c1.course_id = c2.course_id 
+GROUP by c1.course_id 
+
+//point_users 테이블에 users 테이블 연결해서 순서대로 정렬해보기
+SELECT pu.user_id, u.name, u.email, pu.point from point_users pu
+inner join users u on pu.user_id = u.user_id 
+order by pu.point desc
+
+//orders 테이블에 users 테이블 연결해서 통계치 내보기
+SELECT u.name, count(*) as cnt from orders o 
+inner join users u on o.user_id = u.user_id 
+where o.email like '%naver.com'
+GROUP by u.name
+위 쿼리가 실행되는 순서: from → join → where → group by → select
+
+//Quiz
+//join 연습 1 결제 수단 별 유저 포인트의 평균값 구해보기
+select o.payment_method, round(avg(pu.point),0) from point_users pu 
+inner join orders o on pu.user_id = o.user_id
+GROUP by o.payment_method 
+
+//join 연습 2 결제하고 시작하지 않은 유저들을 성씨별로 세어보기
+select u.name, count(*) as cnt_name from enrolleds e 
+inner join users u on e.user_id = u.user_id
+where is_registered = 0
+group by u.name
+order by cnt_name desc
+
+// join 연습 3 과목 별로 시작하지 않은 유저들을 세어보기
+SELECT c.course_id, c.title, count(*) as cnt_notstart from courses c
+inner join enrolleds e on c.course_id = e.course_id
+where e.is_registered = 0
+group by c.course_id 
+
+//join 연습 4 
+SELECT c.title, c2.week, count(*) as cnt from courses c 
+inner join checkins c2 on c.course_id = c2.course_id
+group by c.title, c2.week
+order by c.title, c2.week
+
+//join 연습 5
+SELECT c.title, c2.week, count(*) as cnt from courses c 
+inner join checkins c2 on c.course_id = c2.course_id
+inner join orders o on c2.user_id = o.user_id
+where o.created_at >= '2020-08-01'
+group by c.title, c2.week
+order by c.title, c2.week
+
+//left join 연습
+select count(point_user_id) as pnt_user_cnt,
+       count(*) as tot_user_cnt,
+       round(count(point_user_id)/count(*),2) as ratio
+  from users u
+  left join point_users pu on u.user_id = pu.user_id
+ where u.created_at between '2020-07-10' and '2020-07-20'
