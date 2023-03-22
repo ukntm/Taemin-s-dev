@@ -28,9 +28,16 @@ where INTAKE_CONDITION != 'Aged'
 SELECT name, datetime from ANIMAL_INS
 order by animal_id desc
 
-//
+// 강원도에 위치한 생산공장 목록 출력하기
+SELECT FACTORY_ID, FACTORY_NAME, ADDRESS from FOOD_FACTORY
+where ADDRESS like '강원도%'
+order by FACTORY_ID asc
+
+// 조건에 맞는 회원수 구하기
+SELECT count(*)from USER_INFO
+where joined like '2021%'and age between 20 and 29
 
 //
-//
+
 //
 //
