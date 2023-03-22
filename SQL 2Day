@@ -62,3 +62,12 @@ select count(point_user_id) as pnt_user_cnt,
   from users u
   left join point_users pu on u.user_id = pu.user_id
  where u.created_at between '2020-07-10' and '2020-07-20'
+
+// 3주차 숙제
+
+SELECT e.enrolled_id, e.user_id, count(*) as max_cnt from enrolleds e 
+inner join enrolleds_detail ed on e.enrolled_id = ed.enrolled_id
+where ed.done = 1
+group by e.enrolled_id 
+order by max_cnt desc
+
