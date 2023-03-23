@@ -72,3 +72,153 @@ group by e.enrolled_id
 order by max_cnt desc
 
 // 4주차 Subquery
+
+// where 절에서의 Subquery
+// 이씨성을 가진 유저들의 포인트가 평균보다 큰경
+select * from point_users pu 
+where pu.point > 
+	(select avg(pu2.point) from point_users pu2
+	inner join users u 
+	on pu2.user_id = u.user_id 
+	where u.name = "이**");
+      
+// select 절에서의 Subquery
+select checkin_id, c3.title, user_id, likes, 
+(select round(avg(c2.likes),1) from checkins c2
+where c.course_id = c2.course_id) as course_avg
+from checkins c
+inner join courses c3 
+on c.course_id = c3.course_id;
+
+//  From 절에서의 Subquery
+select		       c2.title,
+			a.cnt_checkins, 
+			b.cnt_total,
+			(a.cnt_checkins/b.cnt_total) as ratio
+from
+(
+	select c.course_id, count(distinct(c.user_id)) as cnt_checkins from checkins c 
+	group by c.course_id
+) a
+inner JOIN 
+(
+	select course_id, count(*) as cnt_total from orders o
+	group by course_id
+) b on a.course_id = b.course_id
+inner join courses c2 on a.course_id = c2.course_id 
+
+
+// with 절
+with table1 as (
+	select course_id, count(distinct(user_id)) as cnt_checkins from checkins
+	group by course_id
+       ) // table1 을 사용하면 안에있는 Subquery를 간단하게 사용할수있음
+
+// SUBSTRING_INDEX
+select user_id, email, SUBSTRING_INDEX(email,'@',-1) from users 
+// (Field에서,@를 기준으로, 1이면 앞에부분 -1이면 뒷부분) 
+
+// SUBSTRING
+select order_no, created_at, substring(created_at,1,10) as date from orders
+// created_at 에서 , 1번째부터,10개의 문자출력)
+
+// case
+
+select pu.point_user_id, pu.point,
+case 
+when pu.point >= 10000 then '1만 이상' // case when 조건 이면 then '출력' 아니면 else '출력' end
+when pu.point >= 5000 then '5천 이상'
+else '5천 미만'
+END as level
+from point_users pu
+
+// 퀴즈
+// 초급 
+// 1) 포인트가 평균값보다 크면 '잘하고있어요' 낮으면 '열심히 합시다'
+select pu.user_id, 
+	   pu.point,
+       (case when pu.point >= (select avg(point) from point_users) then '잘 하고 있어요!'
+	         else '열심히 합시다!'
+             end) as msg
+  from point_users pu
+// 2) 이메일 도메인별 유저의 수 구하기
+SELECT domain, count(*) FROM(
+SELECT SUBSTRING_INDEX(email,'@',-1) as domain FROM users u 
+) a 
+group by domain
+// 3) 화이팅 이 포함된 오늘의 다짐만 구하기
+SELECT * FROM checkins c 
+where comment like '%화이팅%'
+
+// 중급
+// 1) 수강등록정보별 전체 강의 수와 들은 강의의 수 출력해보기
+
+with table1 
+as(SELECT enrolled_id, count(*) as done_cnt FROM enrolleds_detail WHERE done = 1
+group by enrolled_id
+),table2 
+as(select enrolled_id, count(*) as total_cnt from enrolleds_detail  
+group by enrolled_id
+)
+SELECT a.enrolled_id, 
+	   a.done_cnt,
+	   b.total_cnt 
+  from table1 a
+inner join table2 b on a.enrolled_id = b.enrolled_id 
+// 더 간단하게 참고 done 이 1 or 0 이기때문에 가
+select enrolled_id,
+       sum(done) as cnt_done,
+       count(*) as cnt_total
+from enrolleds_detail ed
+group by enrolled_id
+
+// 숙제 
+// SQL 문법 정리
+// SELECT
+모든 칼럼 조회
+select * from 테이블
+필요한 칼럼 조회
+select 칼럼 from 테이블
+//where
+// where 의 조건에 맞는 칼럼 조
+select * from student where 칼럼 = 1
+// like 조건 
+select * from student where 칼럼 like '%문자%'
+// 조회 행의수 제한
+select * from student limit 1;
+// GROUP BY
+특정 칼럼 기준의 데이터 그룹핑
+GROUP BY 칼럼
+// ORDER BY
+특정 칼럼 기준으로 정렬
+ASC 오름차순
+DESC 내림차순
+// 중복 행 제거 DISTINCT
+// 별칭 Alias
+// 계산 함수
+max,min,count,avg,sum
+select 계산함수(칼럼) from 테이블 로 사용
+//INNER JOIN
+SELECT A.a, A.b, B.c 
+FROM A
+INNER JOIN B
+ON B.a = A.c
+A와 B의 교집합
+//LEFT JOIN
+A테이블 기준으로 B테이블에 A테이블의 칼럼과 일치하는 조건이 없으면 B테이블의 칼럼은 NULL로 조회
+SELECT A.a, A.b, B.c 
+FROM A
+LEFT JOIN B
+ON B.a = A.a
+// WITH 
+WITH 별칭 AS 서브쿼리 로 서브쿼리를 하나의 테이블로 
+// CASE
+case when 조건 이면 then '출력' 아니면 else '출력' end
+
+// SUBSTRING_INDEX
+select user_id, email, SUBSTRING_INDEX(email,'@',-1) from users 
+// (Field에서,@를 기준으로, 1이면 앞에부분 -1이면 뒷부분) 
+
+// SUBSTRING
+select order_no, created_at, substring(created_at,1,10) as date from orders
+// created_at 에서 , 1번째부터,10개의 문자출력)
