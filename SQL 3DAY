@@ -1,43 +1,52 @@
-// 아픈 동물 찾기
+// 1.아픈 동물 찾기
 SELECT a.ANIMAL_ID, a.Name from ANIMAL_INS a
 where INTAKE_CONDITION = 'Sick'
 order by ANIMAL_ID asc
 
-// 동물의 아이디와 이름
+// 2.동물의 아이디와 이름
 SELECT a.ANIMAL_ID, a.NAME from ANIMAL_INS a
 order by ANIMAL_ID asc
 
-// 이름이 있는 동물의 아이디
+// 3.이름이 있는 동물의 아이디
 SELECT ANIMAL_ID from ANIMAL_INS
 where NAME != 'NULL'
 
-//상위 n개 레코드
+// 4.상위 n개 레코드
 SELECT NAME from ANIMAL_INS
 order by datetime
 limit 1
 
-// 여러 기준으로 정렬하기
+// 5.여러 기준으로 정렬하기
 SELECT ANIMAL_ID, NAME, DATETIME from ANIMAL_INS
 order by NAME asc ,DATETIME desc
 
-// 어린 동물 찾기
+// 6.어린 동물 찾기
 SELECT ANIMAL_ID, NAME from ANIMAL_INS
 where INTAKE_CONDITION != 'Aged'
 
-// 역순 정렬하기
+// 7.역순 정렬하기
 SELECT name, datetime from ANIMAL_INS
 order by animal_id desc
 
-// 강원도에 위치한 생산공장 목록 출력하기
+// 8.강원도에 위치한 생산공장 목록 출력하기
 SELECT FACTORY_ID, FACTORY_NAME, ADDRESS from FOOD_FACTORY
 where ADDRESS like '강원도%'
 order by FACTORY_ID asc
 
-// 조건에 맞는 회원수 구하기
+// 9. 나이 정보가 없는 회원 수 구하기
+SELECT COUNT(*) AS USERS FROM USER_INFO
+WHERE AGE IS NULL
+
+// 10.경기도에 위치한 식품창고 목록 출력하기
+SELECT WAREHOUSE_ID, WAREHOUSE_NAME, ADDRESS, COALEASE(FREEZER_YN,'N') AS FREEZER_YN 
+  FROM FOOD_WAREHOUSE 
+  WHERE ADDRESS LIKE '경기도%'
+ ORDER BY WAREHOUSE_ID ASC
+
+// 11.조건에 맞는 회원수 구하기
 SELECT count(*)from USER_INFO
 where joined like '2021%'and age between 20 and 29
 
-//
-
-//
-//
+// 12.이름이 없는 동물의 아이디
+SELECT ANIMAL_ID FROM ANIMAL_INS
+WHERE NAME IS NULL
