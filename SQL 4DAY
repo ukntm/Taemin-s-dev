@@ -1,16 +1,73 @@
-// 가장 비싼 상품 구하기
+// 1.가장 비싼 상품 구하기
 SELECT MAX(PRICE) FROM PRODUCT
 
-// 흉부외과 또는 일반외과 의사 목록 출력하기
+// 2.흉부외과 또는 일반외과 의사 목록 출력하기
 SELECT DR_NAME, DR_ID, MCDP_CD, SUBSTRING(HIRE_YMD,1,10) FROM DOCTOR
 WHERE MCDP_CD IN ('CS','GS')
 ORDER BY HIRE_YMD DESC, DR_NAME ASC
 
-// 12세 이하인 여자 환자 목록 출력하기
+// 3.12세 이하인 여자 환자 목록 출력하기
 SELECT PT_NAME, PT_NO, GEND_CD, AGE, COALESCE(TLNO,'NONE') FROM PATIENT
 WHERE AGE <= 12 AND GEND_CD = 'W'
 ORDER BY AGE DESC, PT_NAME ASC
 
-// 인기있는 아이스크림
+// 4.인기있는 아이스크림
 SELECT FLAVOR FROM FIRST_HALF
 ORDER BY TOTAL_ORDER DESC, SHIPMENT_ID ASC
+
+// 5.모든 레코드 조회하기
+SELECT *from ANIMAL_INS
+order by ANIMAL_ID
+
+// 6.조건에 맞는 도서 리스트 출력하기
+SELECT BOOK_ID, SUBSTRING(PUBLISHED_DATE,1,10) from BOOK
+where PUBLISHED_DATE like '2021%' and CATEGORY = '인문'
+order by PUBLISHED_DATE
+
+// 7.평균 일일 대여 요금 구하기
+SELECT ROUND(AVG(DAILY_FEE),0) AS AVERAGE_FEE from CAR_RENTAL_COMPANY_CAR
+where CAR_TYPE	 = 'SUV'
+
+// 8. 최댓값 구하기
+SELECT max(datetime) from ANIMAL_INS
+
+// 9.과일로 만든 아이스크림 고르기
+SELECT a.FLAVOR 
+from FIRST_HALF a
+join ICECREAM_INFO b
+on a.FLAVOR = b.FLAVOR
+where a.TOTAL_ORDER > 3000 
+AND b.INGREDIENT_TYPE = 'fruit_based'
+order by TOTAL_ORDER desc
+
+// 10.특정 옵션이 포함된 자동차 리스트 구하기
+SELECT*FROM CAR_RENTAL_COMPANY_CAR
+WHERE OPTIONS LIKE '%네비게이션%'
+ORDER BY CAR_ID DESC
+
+// 11. 자동차 대여 기록에서 장기/단기 대여 구분하기
+SELECT  HISTORY_ID,
+        CAR_ID,
+        DATE_FORMAT(START_DATE,'%Y-%m-%d') AS START_DATE,
+        DATE_FORMAT(END_DATE,'%Y-%m-%d') AS END_DATE,
+        CASE WHEN DATEDIFF(END_DATE, START_DATE)+1 >= 30 
+        THEN '장기 대여'
+        ELSE '단기 대여' 
+        END AS RENT_TYPE
+FROM CAR_RENTAL_COMPANY_RENTAL_HISTORY
+WHERE START_DATE LIKE '2022-09%'
+ORDER BY HISTORY_ID DESC
+
+// 12. 조건에 부합하는 중고거래 댓글 조회하기
+SELECT  A.TITLE,
+        A.BOARD_ID,
+        B.REPLY_ID,
+        B.WRITER_ID,
+        B.CONTENTS,
+        DATE_FORMAT(B.CREATED_DATE,'%Y-%m-%d') AS CREATED_DATE
+FROM USED_GOODS_BOARD A
+JOIN USED_GOODS_REPLY B 
+ON A.BOARD_ID = B.BOARD_ID
+WHERE A.CREATED_DATE 
+LIKE '2022-10%'
+ORDER BY B.CREATED_DATE ASC, A.TITLE ASC
